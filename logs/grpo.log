@@ -1,0 +1,83 @@
+[2025-12-10 11:51:46,435] [WARNING] [runner.py:232:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+[2025-12-10 11:51:46,435] [INFO] [runner.py:630:main] cmd = /home/jcdutoit/Projects/674_final/.venv/bin/python3 -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMl19 --master_addr=127.0.0.1 --master_port=29500 --enable_each_rank_log=None --log_level=info main.py --port 59875
+[2025-12-10 11:52:35,477] [INFO] [launch.py:162:main] WORLD INFO DICT: {'localhost': [2]}
+[2025-12-10 11:52:35,477] [INFO] [launch.py:168:main] nnodes=1, num_local_procs=1, node_rank=0
+[2025-12-10 11:52:35,477] [INFO] [launch.py:179:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0]})
+[2025-12-10 11:52:35,477] [INFO] [launch.py:180:main] dist_world_size=1
+[2025-12-10 11:52:35,477] [INFO] [launch.py:184:main] Setting CUDA_VISIBLE_DEVICES=2
+[2025-12-10 11:52:35,485] [INFO] [launch.py:272:main] process 3757575 spawned with command: ['/home/jcdutoit/Projects/674_final/.venv/bin/python3', '-u', 'main.py', '--local_rank=0', '--port', '59875']
+
+START vLLM generation...
+
+`torch_dtype` is deprecated! Use `dtype` instead!
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00, 23.58it/s]
+wandb: Tracking run with wandb version 0.23.1
+wandb: W&B syncing is set to `offline` in this directory. Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+wandb: Run data is saved locally in /home/jcdutoit/Projects/674_final/wandb/offline-run-20251210_115353-7xai5c8u
+  0%|          | 0/500 [00:00<?, ?it/s]Generation worker process uses GPU 1
+INFO 12-10 11:55:31 [arg_utils.py:589] HF_HUB_OFFLINE is True, replace model_id [Qwen/Qwen2.5-3B] to model_path [/home/jcdutoit/.cache/huggingface/hub/models--Qwen--Qwen2.5-3B/snapshots/3aab1f1954e9cc14eb9509a215f9e5ca08227a9b]
+INFO 12-10 11:55:31 [utils.py:253] non-default args: {'dtype': 'float16', 'seed': None, 'max_model_len': 4096, 'gpu_memory_utilization': 0.3, 'disable_log_stats': True, 'model': '/home/jcdutoit/.cache/huggingface/hub/models--Qwen--Qwen2.5-3B/snapshots/3aab1f1954e9cc14eb9509a215f9e5ca08227a9b'}
+WARNING 12-10 11:55:31 [arg_utils.py:1175] `seed=None` is equivalent to `seed=0` in V1 Engine. You will no longer be allowed to pass `None` in v0.13.
+INFO 12-10 11:55:31 [model.py:637] Resolved architecture: Qwen2ForCausalLM
+WARNING 12-10 11:55:31 [model.py:2089] Casting torch.bfloat16 to torch.float16.
+INFO 12-10 11:55:31 [model.py:1750] Using max model len 4096
+INFO 12-10 11:55:34 [scheduler.py:228] Chunked prefill is enabled with max_num_batched_tokens=8192.
+WARNING 12-10 11:55:35 [system_utils.py:136] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:56:39 [core.py:93] Initializing a V1 LLM engine (v0.12.0) with config: model='/home/jcdutoit/.cache/huggingface/hub/models--Qwen--Qwen2.5-3B/snapshots/3aab1f1954e9cc14eb9509a215f9e5ca08227a9b', speculative_config=None, tokenizer='/home/jcdutoit/.cache/huggingface/hub/models--Qwen--Qwen2.5-3B/snapshots/3aab1f1954e9cc14eb9509a215f9e5ca08227a9b', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=4096, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, disable_custom_all_reduce=False, quantization=None, enforce_eager=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_fallback=False, disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01), seed=0, served_model_name=/home/jcdutoit/.cache/huggingface/hub/models--Qwen--Qwen2.5-3B/snapshots/3aab1f1954e9cc14eb9509a215f9e5ca08227a9b, enable_prefix_caching=True, enable_chunked_prefill=True, pooler_config=None, compilation_config={'level': None, 'mode': <CompilationMode.VLLM_COMPILE: 3>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['none'], 'splitting_ops': ['vllm::unified_attention', 'vllm::unified_attention_with_output', 'vllm::unified_mla_attention', 'vllm::unified_mla_attention_with_output', 'vllm::mamba_mixer2', 'vllm::mamba_mixer', 'vllm::short_conv', 'vllm::linear_attention', 'vllm::plamo2_mamba_mixer', 'vllm::gdn_attention_core', 'vllm::kda_attention', 'vllm::sparse_attn_indexer'], 'compile_mm_encoder': False, 'compile_sizes': [], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.FULL_AND_PIECEWISE: (2, 1)>, 'cudagraph_num_of_warmups': 1, 'cudagraph_capture_sizes': [1, 2, 4, 8, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248, 256, 272, 288, 304, 320, 336, 352, 368, 384, 400, 416, 432, 448, 464, 480, 496, 512], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': False, 'fuse_act_quant': False, 'fuse_attn_quant': False, 'eliminate_noops': True, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False}, 'max_cudagraph_capture_size': 512, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>}, 'local_cache_dir': None}
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:56:45 [parallel_state.py:1200] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://192.168.219.3:41199 backend=nccl
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:56:45 [parallel_state.py:1408] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank 0
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:56:46 [gpu_model_runner.py:3467] Starting to load model /home/jcdutoit/.cache/huggingface/hub/models--Qwen--Qwen2.5-3B/snapshots/3aab1f1954e9cc14eb9509a215f9e5ca08227a9b...
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:56:49 [cuda.py:411] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION']
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m Loading safetensors checkpoint shards:   0% Completed | 0/2 [00:00<?, ?it/s]
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m Loading safetensors checkpoint shards:  50% Completed | 1/2 [00:00<00:00,  1.44it/s]
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m Loading safetensors checkpoint shards: 100% Completed | 2/2 [00:01<00:00,  1.88it/s]
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m Loading safetensors checkpoint shards: 100% Completed | 2/2 [00:01<00:00,  1.79it/s]
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m 
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:56:51 [default_loader.py:308] Loading weights took 1.14 seconds
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:56:51 [gpu_model_runner.py:3549] Model loading took 5.7916 GiB memory and 4.976587 seconds
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:27 [backends.py:655] Using cache directory: /home/jcdutoit/.cache/vllm/torch_compile_cache/5d841f0ddd/rank_0_0/backbone for vLLM's torch.compile
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:27 [backends.py:715] Dynamo bytecode transform time: 35.50 s
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:37 [backends.py:216] Directly load the compiled graph(s) for dynamic shape from the cache, took 9.142 s
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:38 [monitor.py:34] torch.compile takes 44.64 s in total
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:39 [gpu_worker.py:359] Available KV cache memory: 6.07 GiB
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:40 [kv_cache_utils.py:1286] GPU KV cache size: 176,912 tokens
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:40 [kv_cache_utils.py:1291] Maximum concurrency for 4,096 tokens per request: 43.19x
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   0%|          | 0/51 [00:00<?, ?it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):   4%|▍         | 2/51 [00:00<00:02, 16.99it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  12%|█▏        | 6/51 [00:00<00:01, 25.65it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  20%|█▉        | 10/51 [00:00<00:01, 28.69it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  27%|██▋       | 14/51 [00:00<00:01, 30.90it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  35%|███▌      | 18/51 [00:00<00:01, 32.21it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  43%|████▎     | 22/51 [00:00<00:00, 33.11it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  51%|█████     | 26/51 [00:00<00:00, 33.86it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  59%|█████▉    | 30/51 [00:00<00:00, 31.72it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  67%|██████▋   | 34/51 [00:01<00:00, 32.84it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  75%|███████▍  | 38/51 [00:01<00:00, 34.10it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  82%|████████▏ | 42/51 [00:01<00:00, 35.02it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE):  90%|█████████ | 46/51 [00:01<00:00, 35.69it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE): 100%|██████████| 51/51 [00:01<00:00, 27.93it/s]Capturing CUDA graphs (mixed prefill-decode, PIECEWISE): 100%|██████████| 51/51 [00:01<00:00, 30.80it/s]
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m Capturing CUDA graphs (decode, FULL):   0%|          | 0/35 [00:00<?, ?it/s]Capturing CUDA graphs (decode, FULL):   3%|▎         | 1/35 [00:00<00:05,  5.77it/s]Capturing CUDA graphs (decode, FULL):  17%|█▋        | 6/35 [00:00<00:01, 23.74it/s]Capturing CUDA graphs (decode, FULL):  31%|███▏      | 11/35 [00:00<00:00, 31.93it/s]Capturing CUDA graphs (decode, FULL):  46%|████▌     | 16/35 [00:00<00:00, 36.67it/s]Capturing CUDA graphs (decode, FULL):  60%|██████    | 21/35 [00:00<00:00, 40.19it/s]Capturing CUDA graphs (decode, FULL):  74%|███████▍  | 26/35 [00:00<00:00, 42.95it/s]Capturing CUDA graphs (decode, FULL):  89%|████████▊ | 31/35 [00:00<00:00, 45.06it/s]Capturing CUDA graphs (decode, FULL): 100%|██████████| 35/35 [00:00<00:00, 39.02it/s]
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:43 [gpu_model_runner.py:4466] Graph capturing finished in 3 secs, took 0.59 GiB
+[0;36m(EngineCore_DP0 pid=3758619)[0;0m INFO 12-10 11:57:43 [core.py:254] init engine (profile, create kv cache, warmup model) took 51.22 seconds
+INFO 12-10 11:57:44 [llm.py:343] Supported tasks: ['generate']
+[2025-12-10 12:07:07,831] [INFO] [launch.py:335:sigkill_handler] Killing subprocess 3757575
+waiting for batch...
+[2025-12-10 12:07:08,013] [INFO] [launch.py:335:sigkill_handler] Killing subprocess 3757575
+[2025-12-10 12:07:08,014] [INFO] [launch.py:344:sigkill_handler] Main process received SIGINT, exiting
+Traceback (most recent call last):
+  File "/home/jcdutoit/.local/share/uv/python/cpython-3.13.7-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 1280, in wait
+    return self._wait(timeout=timeout)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/home/jcdutoit/.local/share/uv/python/cpython-3.13.7-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 2066, in _wait
+    (pid, sts) = self._try_wait(0)
+                 ~~~~~~~~~~~~~~^^^
+  File "/home/jcdutoit/.local/share/uv/python/cpython-3.13.7-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 2024, in _try_wait
+    (pid, sts) = os.waitpid(self.pid, wait_flags)
+                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/jcdutoit/Projects/674_final/.venv/bin/deepspeed", line 6, in <module>
+    main()
+    ~~~~^^
+  File "/home/jcdutoit/Projects/674_final/.venv/lib/python3.13/site-packages/deepspeed/launcher/runner.py", line 646, in main
+    result.wait()
+    ~~~~~~~~~~~^^
+  File "/home/jcdutoit/.local/share/uv/python/cpython-3.13.7-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 1293, in wait
+    self._wait(timeout=sigint_timeout)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jcdutoit/.local/share/uv/python/cpython-3.13.7-linux-x86_64-gnu/lib/python3.13/subprocess.py", line 2060, in _wait
+    time.sleep(delay)
+    ~~~~~~~~~~^^^^^^^
+KeyboardInterrupt
+/home/jcdutoit/.local/share/uv/python/cpython-3.13.7-linux-x86_64-gnu/lib/python3.13/multiprocessing/resource_tracker.py:324: UserWarning: resource_tracker: There appear to be 4 leaked semaphore objects to clean up at shutdown: {'/mp-1e5gxug9', '/mp-fla_bkoj', '/mp-77n8ptzq', '/mp-o5_2ui76'}
+  warnings.warn(

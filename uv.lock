@@ -3,6 +3,6 @@ revision = 3
 requires-python = ">=3.13"
 
 [[package]]
-name = "probability-aligned-llms"
+name = "674-final"
 version = "0.1.0"
 source = { virtual = "." }
