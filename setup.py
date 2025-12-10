@@ -18,6 +18,3 @@ else:
     # Download model weights and tokenizer
     from transformers import AutoModelForCausalLM; AutoModelForCausalLM.from_pretrained('Qwen/Qwen2.5-3B')
     from transformers import AutoTokenizer; AutoTokenizer.from_pretrained('Qwen/Qwen2.5-3B')
-
-    # Download GSM8K dataset
-    from datasets import load_dataset; load_dataset('openai/gsm8k', 'main', split='train')
