@@ -4,6 +4,8 @@ It downloads model weights and datasets needed for training.
 """
 
 import socket
+import os
+from huggingface_hub import snapshot_download
 
 def check_internet(host="huggingface.co", port=443, timeout=3):
     try:
@@ -12,9 +14,19 @@ def check_internet(host="huggingface.co", port=443, timeout=3):
     except Exception:
         return False
 
+# Specify your desired save path here (adjust as needed)
+save_path = "/home/jcdutoit/Projects/scratch2/models/Qwen2.5-3B"  # Example: local directory
+
 if not check_internet():
     print("WARNING: No internet connectivity. Downloads will fail. Run this on the login node with internet access.")
 else:
-    # Download model weights and tokenizer
-    from transformers import AutoModelForCausalLM; AutoModelForCausalLM.from_pretrained('Qwen/Qwen2.5-3B')
-    from transformers import AutoTokenizer; AutoTokenizer.from_pretrained('Qwen/Qwen2.5-3B')
+    # Download the full model repository (weights + tokenizer) to the specified path
+    print(f"Downloading model and tokenizer to: {save_path}")
+    snapshot_download(repo_id='Qwen/Qwen2.5-3B', local_dir=save_path)
+    
+    # Verify by loading from the local path
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    model = AutoModelForCausalLM.from_pretrained(save_path, local_files_only=True)
+    tokenizer = AutoTokenizer.from_pretrained(save_path, local_files_only=True)
+    print(f"Pad token ID: {tokenizer.pad_token_id}")
+    print("Download and verification complete.")
