@@ -1,0 +1,99 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    python_version: 3.13.7
+    cli_version: 0.23.1
+    framework: huggingface
+    huggingface_version: 4.57.3
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1765232866
+    t:
+      1:
+      - 1
+      - 11
+      - 41
+      - 49
+      2:
+      - 1
+      - 11
+      - 41
+      - 49
+      3:
+      - 4
+      - 13
+      - 16
+      - 42
+      4: 3.13.7
+      5: 0.23.1
+      6: 4.57.3
+      13: linux-x86_64
+    e:
+      g9dihb60c4rqd1rcngmkm5yjnxc2gpks:
+        os: Linux-5.14.0-427.50.1.el9_4.x86_64-x86_64-with-glibc2.34
+        python: CPython 3.13.7
+        started_at: '2025-12-08T22:27:39.969420Z'
+        args:
+        - --local_rank=0
+        - --port
+        - '59875'
+        program: /home/jcdutoit/Projects/674_final/main.py
+        code_path: main.py
+        code_path_local: main.py
+        root: /home/jcdutoit/Projects/674_final
+        host: m13l-1-2
+        executable: /home/jcdutoit/Projects/674_final/.venv/bin/python3
+        cpu_count: 64
+        cpu_count_logical: 64
+        gpu_type: NVIDIA L40S
+        gpu_count: 2
+        disk:
+          /:
+            total: '549755813888000'
+            used: '2928629252096'
+        memory:
+          total: '540390051840'
+        gpu_nvidia:
+        - name: NVIDIA L40S
+          memory_total: '48305799168'
+          cuda_cores: 18176
+          architecture: Ada
+          uuid: GPU-5515b2cc-4bdd-1da1-09c3-12797bdee771
+        - name: NVIDIA L40S
+          memory_total: '48305799168'
+          cuda_cores: 18176
+          architecture: Ada
+          uuid: GPU-314ca005-96ba-3b70-12c8-33331e7bf8cb
+        cuda_version: '12.8'
+        slurm:
+          job_id: '8902000'
+        writer_id: g9dihb60c4rqd1rcngmkm5yjnxc2gpks
+model_path:
+  desc: null
+  value: Qwen/Qwen2.5-3B
+beta:
+  desc: null
+  value: 0.04
+all_steps:
+  desc: null
+  value: 500
+Q_batch_size:
+  desc: null
+  value: 1
+num_pre_Q:
+  desc: null
+  value: 3
+train_batch_size:
+  desc: null
+  value: 1
+gen_update_steps:
+  desc: null
+  value: 6
+clip_param:
+  desc: null
+  value: 0.2
+compute_gen_logps:
+  desc: null
+  value: true

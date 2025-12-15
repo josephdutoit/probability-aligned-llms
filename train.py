@@ -135,7 +135,9 @@ def gen_worker(Q, cfg):
         return answers, ans_token_ids
 
     def gen_samples(inputs):
+        print(f"Generating answers for the following inputs: {inputs}")
         answers, ans_token_ids = gen_answers(inputs)
+        print('Generated answers:', answers)
         rewards = []
         for i in range(len(inputs)):
             # for a in answers[i*num_pre_Q:(i+1)*num_pre_Q]:

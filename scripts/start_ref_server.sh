@@ -6,4 +6,4 @@ export TRANSFORMERS_OFFLINE=1
 # Accept port as argument, default to 59875
 PORT=${1:-59875}
 
-uv run ref_server.py --port $PORT
+python ref_server.py --port $PORT
