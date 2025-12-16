@@ -40,56 +40,58 @@ def compute_rewards(ans1, ans2):
         # Format reward
         if re.search(r'<think>.*?</think><answer>.*?</answer>', a1, re.DOTALL):
             rewards1[i] += 1.0
+        else:
+            rewards1[i] += -1.0
+
         if re.search(r'<think>.*?</think><answer>.*?</answer>', a2, re.DOTALL):
             rewards2[i] += 1.0
+        else:
+            rewards2[i] += -1.0
         
-        # continue only if both have correct format
-        if rewards1[i] == 1.0 and rewards2[i] ==1.0:
-            prob1 = get_prob(ans1)
-            prob2 = get_prob(ans2)
+        if rewards1[i] == 1.0 and rewards2[i] == 1.0:
+            prob1 = get_prob(a1)
+            prob2 = get_prob(a2)
             probs1.append(prob1)
             probs2.append(prob2)
+
+    # continue only if all answers have the correct format
+    if len(probs1) != len(ans1) or len(probs2) != len(ans2):
+        return rewards1, rewards2
 
     # ensure that all probabilities match and are not None
     prob1 = probs1[0] if all(p == probs1[0] for p in probs1) else None
     prob2 = probs2[0] if all(p == probs2[0] for p in probs2) else None
 
-    if prob1 is None:
+    if prob1 is not None:
         for i in range(len(ans1)):
-            rewards1[i] += -1.0
-    if prob2 is None:
+            rewards1[i] += 1.0
+
+    if prob2 is not None:
         for i in range(len(ans2)):
-            rewards2[i] += -1.0
+            rewards2[i] += 1.0
 
     # do not continue unless all probabilities match and are not None
-    if prob1 is None and prob2 is None:
+    if prob1 is None or prob2 is None:
         return rewards1, rewards2
 
     # check the range contraints
-    if not check_range(prob1):
+    if check_range(prob1):
         for i in range(len(ans1)):
-            rewards1[i] += -1.0
+            rewards1[i] += 1.0
 
-    if not check_range(prob2):
+    if check_range(prob2):
         for i in range(len(ans2)):
-            rewards2[i] += -1.0
-    
+            rewards2[i] += 1.0
+
     # do not continue unless both probabilities are in range
-    if not check_range(prob1) and not check_range(prob2):
+    if not check_range(prob1) or not check_range(prob2):
         return rewards1, rewards2
 
     # check the sum constraint
-    if prob1 + prob2 != 1.0:
-        for i in range(len(ans1)):
-            rewards1[i] += -1.0
-            rewards2[i] += -1.0
-
-    else:
+    if prob1 + prob2 == 1.0:
         for i in range(len(ans1)):
             rewards1[i] += 1.0
-            rewards2[i] += 1.0
-    
-    
+            rewards2[i] += 1.0  
     
     return rewards1, rewards2
     
