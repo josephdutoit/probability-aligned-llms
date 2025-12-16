@@ -27,35 +27,69 @@ def check_range(prob: float):
     return 0.0 <= prob <= 1.0
 
 def compute_rewards(ans1, ans2):
-    print(f"Computing rewards for answers: '{ans1}' and '{ans2}'")
-    prob1 = get_prob(ans1)
-    prob2 = get_prob(ans2)
-    reward1 = 0.0
-    reward2 = 0.0
+    rewards1 = [0.0] * len(ans1)
+    rewards2 = [0.0] * len(ans2)
+    probs1 = []
+    probs2 = []
+    for i in range(len(ans1)):
+ 
+        a1 = ans1[i]
+        a2 = ans2[i]
+        print(f"Computing rewards for answers: '{a1}' and '{a2}'")
+        
+        # Format reward
+        if re.search(r'<think>.*?</think><answer>.*?</answer>', a1, re.DOTALL):
+            rewards1[i] += 1.0
+        if re.search(r'<think>.*?</think><answer>.*?</answer>', a2, re.DOTALL):
+            rewards2[i] += 1.0
+        
+        # continue only if both have correct format
+        if rewards1[i] == 1.0 and rewards2[i] ==1.0:
+            prob1 = get_prob(ans1)
+            prob2 = get_prob(ans2)
+            probs1.append(prob1)
+            probs2.append(prob2)
+
+    # ensure that all probabilities match and are not None
+    prob1 = probs1[0] if all(p == probs1[0] for p in probs1) else None
+    prob2 = probs2[0] if all(p == probs2[0] for p in probs2) else None
 
     if prob1 is None:
-        reward1 = -1.0  
-    else:
-        reward1 += 1.0
+        for i in range(len(ans1)):
+            rewards1[i] += -1.0
     if prob2 is None:
-        reward2 = -1.0  
+        for i in range(len(ans2)):
+            rewards2[i] += -1.0
+
+    # do not continue unless all probabilities match and are not None
+    if prob1 is None and prob2 is None:
+        return rewards1, rewards2
+
+    # check the range contraints
+    if not check_range(prob1):
+        for i in range(len(ans1)):
+            rewards1[i] += -1.0
+
+    if not check_range(prob2):
+        for i in range(len(ans2)):
+            rewards2[i] += -1.0
+    
+    # do not continue unless both probabilities are in range
+    if not check_range(prob1) and not check_range(prob2):
+        return rewards1, rewards2
+
+    # check the sum constraint
+    if prob1 + prob2 != 1.0:
+        for i in range(len(ans1)):
+            rewards1[i] += -1.0
+            rewards2[i] += -1.0
+
     else:
-        reward2 += 1.0
-        
-    if prob1 is not None and not check_range(prob1):
-        reward1 -= 1.0 
-    if prob2 is not None and not check_range(prob2):
-        reward2 -= 1.0 
+        for i in range(len(ans1)):
+            rewards1[i] += 1.0
+            rewards2[i] += 1.0
     
-    if prob1 is not None and prob2 is not None and prob1 + prob2 != 1.0:
-        reward1 -= 1.0
-        reward2 -= 1.0
     
-    # Format reward
-    if re.search(r'<think>.*?</think><answer>.*?</answer>', ans1, re.DOTALL):
-        reward1 += 1.0
-    if re.search(r'<think>.*?</think><answer>.*?</answer>', ans2, re.DOTALL):
-        reward2 += 1.0
     
-    return reward1, reward2
+    return rewards1, rewards2
     
