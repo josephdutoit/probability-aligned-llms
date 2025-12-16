@@ -199,9 +199,9 @@ def gen_worker(Q, physics_device):
         for i in range(len(answers)//2):
             logger.info(f"RESPONSE 1: {answers[i]}")
             logger.info(f"RESPONSE 2: {answers[len(answers)//2 + i]}")
-            r1, r2 = compute_rewards(answers[i], answers[len(answers)//2 + i])
-            rewards.append((r1, r2))
-        rewards = [r[0] for r in rewards] + [r[1] for r in rewards]
+        r1, r2 = compute_rewards(answers[:len(answers)//2], answers[len(answers)//2:])
+        rewards.append((r1, r2))
+        rewards = r1 + r2
 
         prompts_text = [vllm_tokenizer.apply_chat_template([
                 {"role": "system", "content": system_prompt},
