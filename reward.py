@@ -2,7 +2,7 @@ import re
 
 def get_prob(ans: str):
     # Match various probability formats
-    pattern = r'(\d+(?:\.\d+)?\s*%?)\s*(?:/\d+)?|\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten)\b'
+    pattern = r'<answer>(\d+(?:\.\d+)?\s*%?)\s*(?:/\d+)?|\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten)\b</answer>'
     matches = re.findall(pattern, ans, re.IGNORECASE)
     
     if not matches:
@@ -48,8 +48,8 @@ def compute_rewards(ans1, ans2):
         reward2 -= 1.0 
     
     if prob1 is not None and prob2 is not None and prob1 + prob2 != 1.0:
-        reward1 -= 0.5
-        reward2 -= 0.5
+        reward1 -= 1.0
+        reward2 -= 1.0
     
     # Format reward
     if re.search(r'<think>.*?</think><answer>.*?</answer>', ans1, re.DOTALL):

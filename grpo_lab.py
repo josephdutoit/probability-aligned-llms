@@ -197,9 +197,9 @@ def gen_worker(Q, physics_device):
         logger.info(f"{'='*20} New Sample Generation {'='*20}")        
         logger.info(f"PROMPTS: {prompts}")
         for i in range(len(answers)//2):
-            logger.info(f"RESPONSE 1: {answers[i*2]}")
-            logger.info(f"RESPONSE 2: {answers[i*2+1]}")
-            r1, r2 = compute_rewards(answers[i*2], answers[i*2+1])
+            logger.info(f"RESPONSE 1: {answers[i]}")
+            logger.info(f"RESPONSE 2: {answers[len(answers)//2 + i]}")
+            r1, r2 = compute_rewards(answers[i], answers[len(answers)//2 + i])
             rewards.append((r1, r2))
         rewards = [r[0] for r in rewards] + [r[1] for r in rewards]
 

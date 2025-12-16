@@ -1,5 +1,5 @@
 def main():
-    print("Hello from scratch2!")
+    print("Hello from probability-aligned-llms!")
 
 
 if __name__ == "__main__":
