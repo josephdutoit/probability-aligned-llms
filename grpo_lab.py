@@ -15,7 +15,7 @@ gen_device = 1    # GPU device for generation, don't put it in CUDA_VISIBLE_DEVI
 beta = 0.04
 all_steps = 500
 Q_batch_size = 1
-num_pre_Q = 3
+num_pre_Q = 8
 train_batch_size = 1
 gen_update_steps = 6
 save_steps = 50
@@ -101,7 +101,7 @@ def GRPO_step(batch, pad_token_id):
     """
     prompt_length = batch['plen']
     inputs = batch['inputs'].to(engine.device)
-    advantages = batch['rewards'].to(engine.device).unsqueeze(1) # (B, 1)
+    advantages = (batch['rewards'] - batch['rewards'].mean()).to(engine.device).unsqueeze(1) # (B, 1)
     logits = engine(inputs).logits
     B, L, V = logits.shape
     logits = logits[:, :-1, :]  # (B, L-1, V)
@@ -118,7 +118,7 @@ def GRPO_step(batch, pad_token_id):
     sliced_input_ids = input_ids[:, prompt_length - 1:]
 
     # 3. Move reference log probabilities to the same device as per_token_logps
-    refs_per_token_logps.to(engine.device)
+    refs_per_token_logps = refs_per_token_logps.to(engine.device)
     
     # 4. Compute per-token KL divergence approximation for regularization
     kl = torch.exp(refs_per_token_logps - new_logps) - (refs_per_token_logps - new_logps) - 1
@@ -144,10 +144,10 @@ def GRPO_step(batch, pad_token_id):
     # 9. Average loss over completion tokens and batch
     loss = loss * mask
     kl = kl * mask
-    loss = (loss - beta * kl).sum(dim=-1) / mask.sum()
+    loss = (loss - beta * kl).sum(dim=-1) / mask.sum(dim=-1).clamp(min=1.0)  # (B,)
     
     # 10. Return final loss 
-    return -loss
+    return -loss.mean()
     
 
 def gen_worker(Q, physics_device):
@@ -165,15 +165,32 @@ def gen_worker(Q, physics_device):
     # print(f"DEBUG: vLLM loaded in gen_worker")  # Add this
     ref_server_ver = 'tensor'  # don't worry, it will auto switch based on the first upload
 
-    sampling_params = SamplingParams(n=num_pre_Q, temperature=0.9, max_tokens=50)
+    sampling_params = SamplingParams(n=num_pre_Q, temperature=0.9, max_tokens=200)
     gen_logps_sp = SamplingParams(temperature=0, top_p=1, max_tokens=1, prompt_logprobs=1)
 
     from probability_dataset import ProbabilityDataset
     data_dir = "./data"
     dataset = ProbabilityDataset(data_dir)
     
-    system_prompt = """You are a helpful assistant that answers questions posed by the user. The user asks a probability question, and you must answer it with a probability as a decimal based on your prior knowledge. You are capable of always answering with a number, and you must.\
-    Your answer must be formatted as follows: <think>[your reasoning process here]</think><answer>[your answer here]</answer> tags. For example: <think>Chelsea is more popular than Arsenal, so they have a 2/3 probability of winning.</think><answer>0.67</answer>."""
+    system_prompt = """
+        You must respond using the exact format below and nothing else.
+
+        <think>
+        Your private reasoning goes here.
+        </think>
+        <answer>
+        A single decimal number between 0 and 1.
+        </answer>
+
+        Rules:
+        - The response must start with <think> and end with </answer>.
+        - Do not write any text before <think> or after </answer>.
+        - Use exactly one <think> block and exactly one <answer> block.
+        - The <answer> block must contain only a decimal number (no words, no symbols).
+        - Do not include explanations outside the tags.
+        - You are not given any information about the probabilities in the question. Base your answer solely on prior knowledge.
+        - If you are unsure, still output a decimal number in the required format.
+    """
     def gen_answers(prompts):
         tip_text = []
         for x in prompts:

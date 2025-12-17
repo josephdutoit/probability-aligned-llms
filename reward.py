@@ -25,7 +25,7 @@ import re
 
 def get_prob(ans: str):
     m = re.match(
-        r'^<think>[\s\S]*?</think><answer>\s*(\d+(?:\.\d+)?)\s*</answer>$',
+        r'^<think>[\s\S]*?</think>\s*<answer>\s*\d+(\.\d+)?\s*</answer>$',
         ans
     )
     if not m:
