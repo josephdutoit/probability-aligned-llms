@@ -165,15 +165,15 @@ def gen_worker(Q, physics_device):
     # print(f"DEBUG: vLLM loaded in gen_worker")  # Add this
     ref_server_ver = 'tensor'  # don't worry, it will auto switch based on the first upload
 
-    sampling_params = SamplingParams(n=num_pre_Q, temperature=0.9, max_tokens=700)
+    sampling_params = SamplingParams(n=num_pre_Q, temperature=0.9, max_tokens=50)
     gen_logps_sp = SamplingParams(temperature=0, top_p=1, max_tokens=1, prompt_logprobs=1)
 
     from probability_dataset import ProbabilityDataset
     data_dir = "./data"
     dataset = ProbabilityDataset(data_dir)
     
-    system_prompt = """You are a helpful assistant. A conversation between User and Assistant. The user asks a probability question, and the Assistant must answer it with a probability as a percentage or decimal based on your prior knowledge. The Assistant first thinks about the reasoning process in the mind and then provides the user with the answer.\
-    The reasoning process and answer are enclosed within <think> </think> and<answer> </answer> tags, respectively, i.e., <think> reasoning process here </think><answer> answer here </answer>."""
+    system_prompt = """You are a helpful assistant that answers questions posed by the user. The user asks a probability question, and you must answer it with a probability as a decimal based on your prior knowledge. You are capable of always answering with a number, and you must.\
+    Your answer must be formatted as follows: <think>[your reasoning process here]</think><answer>[your answer here]</answer> tags. For example: <think>Chelsea is more popular than Arsenal, so they have a 2/3 probability of winning.</think><answer>0.67</answer>."""
     def gen_answers(prompts):
         tip_text = []
         for x in prompts:

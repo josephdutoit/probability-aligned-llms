@@ -21,7 +21,7 @@ def get_prob(ans: str):
         return None
         # TODO: Could add word-to-number conversion here
     except (ValueError, ZeroDivisionError):
-        return None
+        return -1.0
 
 def check_range(prob: float):
     return 0.0 <= prob <= 1.0
@@ -41,12 +41,12 @@ def compute_rewards(ans1, ans2):
         if re.search(r'<think>.*?</think><answer>.*?</answer>', a1, re.DOTALL):
             rewards1[i] += 1.0
         else:
-            rewards1[i] += -1.0
+            rewards1[i] += -2.0
 
         if re.search(r'<think>.*?</think><answer>.*?</answer>', a2, re.DOTALL):
             rewards2[i] += 1.0
         else:
-            rewards2[i] += -1.0
+            rewards2[i] += -2.0
         
         if rewards1[i] == 1.0 and rewards2[i] == 1.0:
             prob1 = get_prob(a1)
@@ -57,6 +57,19 @@ def compute_rewards(ans1, ans2):
     # continue only if all answers have the correct format
     if len(probs1) != len(ans1) or len(probs2) != len(ans2):
         return rewards1, rewards2
+
+    # check the range contraints 
+    for i in range(len(ans1)):
+        if check_range(probs1[i]):
+            rewards1[i] += 1.0
+        else:
+            rewards1[i] += -1.0
+  
+    for i in range(len(ans2)):
+        if check_range(probs2[i]):
+            rewards2[i] += 1.0
+        else:
+            rewards2[i] += -1.0
 
     # ensure that all probabilities match and are not None
     prob1 = probs1[0] if all(p == probs1[0] for p in probs1) else None
@@ -73,15 +86,6 @@ def compute_rewards(ans1, ans2):
     # do not continue unless all probabilities match and are not None
     if prob1 is None or prob2 is None:
         return rewards1, rewards2
-
-    # check the range contraints
-    if check_range(prob1):
-        for i in range(len(ans1)):
-            rewards1[i] += 1.0
-
-    if check_range(prob2):
-        for i in range(len(ans2)):
-            rewards2[i] += 1.0
 
     # do not continue unless both probabilities are in range
     if not check_range(prob1) or not check_range(prob2):

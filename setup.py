@@ -15,7 +15,7 @@ def check_internet(host="huggingface.co", port=443, timeout=3):
         return False
 
 # Specify your desired save path here (adjust as needed)
-save_path = "/home/jcdutoit/Projects/scratch2/models/Qwen2.5-3B"  # Example: local directory
+save_path = "/home/dustin73/projects/models/Qwen2.5-3B"  # Example: local directory
 
 if not check_internet():
     print("WARNING: No internet connectivity. Downloads will fail. Run this on the login node with internet access.")
