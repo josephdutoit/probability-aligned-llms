@@ -48,10 +48,10 @@ def compute_rewards(ans1, ans2):
         print(f"Computing rewards for answers: '{a1}' and '{a2}'")
         
         # Format reward
-        if re.search(r'^<think>[\s\S]*?</think><answer>[\s\S]*?</answer>$', a1, re.DOTALL):
+        if re.search(r'^<think>[\s\S]*?</think>\s*<answer>\s*\d+(\.\d+)?\s*</answer>$', a1, re.DOTALL):
             rewards1[i] += 1.0
 
-        if re.search(r'^<think>[\s\S]*?</think><answer>[\s\S]*?</answer>$', a2, re.DOTALL):
+        if re.search(r'^<think>[\s\S]*?</think>\s*<answer>\s*\d+(\.\d+)?\s*</answer>$', a2, re.DOTALL):
             rewards2[i] += 1.0
         
         if rewards1[i] == 1.0 and rewards2[i] == 1.0:
