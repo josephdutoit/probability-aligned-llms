@@ -10,7 +10,7 @@ from tqdm import tqdm
 import wandb
 
 os.environ['TOKENIZERS_PARALLELISM'] = 'true'
-model_path = "Qwen/Qwen2.5-3B"
+model_path = "Qwen/Qwen3-4B"
 gen_device = 1    # GPU device for generation, don't put it in CUDA_VISIBLE_DEVICES
 beta = 0.04
 all_steps = 500
@@ -26,6 +26,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--ref-server-port', type=int, default=59875)
 args, unknown = parser.parse_known_args()
 ref_server = f"http://localhost:{args.ref_server_port}"
+pad_token_id = AutoTokenizer.from_pretrained(model_path).pad_token_id
+
 from ref_server import tensor_to_bytes, bytes_to_tensor, make_bytes_list, bytes_list_to_list
 
 ds_config = {
@@ -118,7 +120,7 @@ def GRPO_step(batch, pad_token_id):
     sliced_input_ids = input_ids[:, prompt_length - 1:]
 
     # 3. Move reference log probabilities to the same device as per_token_logps
-    refs_per_token_logps.to(engine.device)
+    refs_per_token_logps = refs_per_token_logps.to(engine.device)
     
     # 4. Compute per-token KL divergence approximation for regularization
     kl = torch.exp(refs_per_token_logps - new_logps) - (refs_per_token_logps - new_logps) - 1
@@ -127,7 +129,7 @@ def GRPO_step(batch, pad_token_id):
     # print(f"DEBUG: sliced_input_ids type: {type(sliced_input_ids)}, shape: {sliced_input_ids.shape if hasattr(sliced_input_ids, 'shape') else 'no shape'}")
     # print(f"DEBUG: pad_token_id: {pad_token_id}")
     if pad_token_id is None:
-        mask = torch.ones_like(sliced_input_ids, dtype=torch.bool)
+        raise ValueError("pad_token_id must be provided and cannot be None.")
     else:
         mask = sliced_input_ids != pad_token_id
     # print(f"DEBUG: mask type: {type(mask)}, shape: {mask.shape if hasattr(mask, 'shape') else 'no shape'}")
@@ -144,10 +146,10 @@ def GRPO_step(batch, pad_token_id):
     # 9. Average loss over completion tokens and batch
     loss = loss * mask
     kl = kl * mask
-    loss = (loss - beta * kl).sum(dim=-1) / mask.sum()
+    loss = (loss - beta * kl).sum(dim=-1) / mask.sum(dim=-1).clamp(min=1.0)
     
     # 10. Return final loss 
-    return -loss
+    return -loss.mean()
     
 
 def gen_worker(Q, physics_device):
@@ -165,21 +167,46 @@ def gen_worker(Q, physics_device):
     # print(f"DEBUG: vLLM loaded in gen_worker")  # Add this
     ref_server_ver = 'tensor'  # don't worry, it will auto switch based on the first upload
 
-    sampling_params = SamplingParams(n=num_pre_Q, temperature=0.9, max_tokens=50)
+    sampling_params = SamplingParams(n=num_pre_Q, temperature=0.9, max_tokens=700)
     gen_logps_sp = SamplingParams(temperature=0, top_p=1, max_tokens=1, prompt_logprobs=1)
 
     from probability_dataset import ProbabilityDataset
     data_dir = "./data"
     dataset = ProbabilityDataset(data_dir)
     
-    system_prompt = """You are a helpful assistant that answers questions posed by the user. The user asks a probability question, and you must answer it with a probability as a decimal based on your prior knowledge. You are capable of always answering with a number, and you must.\
-    Your answer must be formatted as follows: <think>[your reasoning process here]</think><answer>[your answer here]</answer> tags. For example: <think>Chelsea is more popular than Arsenal, so they have a 2/3 probability of winning.</think><answer>0.67</answer>."""
+    # system_prompt = """
+    #     You are an AI language model that provides a probability estimate for a given question. 
+    #     You will not be given any information about the probabilities in the question. You must base your answer solely on your prior knowledge.
+    #     You must answer with a single decimal number between 0 and 1, representing the probability estimate.
+    #     The answer must be at the end of the response and be enclosed within <answer> </answer> tags, e.g., Reasoning about answer <answer> 0.5 </answer>.
+    # """
+    
+    system_prompt = """
+        You must respond using the exact format below and nothing else, e.g.
+
+        <think>
+        Your private reasoning goes here.
+        </think>
+        <answer>
+        0.61
+        </answer>
+
+        Rules:
+        - The response must start with <think> and end with </answer>.
+        - Do not write any text before <think> or after </answer>.
+        - Use exactly one <think> block and exactly one <answer> block.
+        - The <answer> block must contain only a decimal number (no words, no symbols).
+        - Do not include explanations outside the tags.
+        - You are not given any information about the probabilities in the question. Base your answer solely on prior knowledge.
+        - If you are unsure, still output your best guess as a decimal number in the required format.
+    """
+    
     def gen_answers(prompts):
         tip_text = []
         for x in prompts:
             tip_text.append(vllm_tokenizer.apply_chat_template([
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": x}], tokenize=False, add_generation_prompt=True))
+                {"role": "user", "content": x}], tokenize=False, add_generation_prompt=True, enable_thinking=True))
         voutputs = vllm_gen.generate(tip_text, sampling_params, use_tqdm=False)
         answers = [];  ans_token_ids = []
         for v in voutputs:
@@ -222,12 +249,12 @@ def gen_worker(Q, physics_device):
         
     from torch.nn.utils.rnn import pad_sequence
     for it in range(999999999):
-        print(f"DEBUG: gen_worker iteration {it} starting")  # Add this
+        # print(f"DEBUG: gen_worker iteration {it} starting")  # Add this
         if it % 3 == 0: try_update_model()
         tic = time.time()
         prompt_inputs, rewards, answers, ans_token_ids = gen_samples()
-        print(f'time: {time.time()-tic:.2f}s    ', 'rewards:', rewards, )
-        if it % 5 == 0: print('answers:', answers[0])
+        # print(f'time: {time.time()-tic:.2f}s    ', 'rewards:', rewards, )
+        # if it % 5 == 0: print('answers:', answers[0])
 
         for i, pp in enumerate(prompt_inputs):
             prompt_ids = vllm_tokenizer(pp, return_tensors="pt", add_special_tokens=False)["input_ids"]
@@ -326,8 +353,8 @@ if __name__ == '__main__':
             # print(f'waiting for batch from {ref_server}'); time.sleep(1)
             batch = get_batch()
 
-        # fallback_tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True, fix_mistral_regex=False)
-        loss = GRPO_step(batch, pad_token_id=model.config.pad_token_id)
+        print(f"GOT PAD TOKEN ID: {pad_token_id}")
+        loss = GRPO_step(batch, pad_token_id=pad_token_id)
         engine.backward(loss)
         engine.step()
 

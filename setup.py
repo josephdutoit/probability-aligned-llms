@@ -14,15 +14,17 @@ def check_internet(host="huggingface.co", port=443, timeout=3):
     except Exception:
         return False
 
+repo_id = "Qwen/Qwen3-4B"
+
 # Specify your desired save path here (adjust as needed)
-save_path = "/home/dustin73/projects/models/Qwen2.5-3B"  # Example: local directory
+save_path = f"/home/jcdutoit/Projects/probability-aligned-llms/{repo_id.replace('/', os.sep)}"  # Example: local directory
 
 if not check_internet():
     print("WARNING: No internet connectivity. Downloads will fail. Run this on the login node with internet access.")
 else:
     # Download the full model repository (weights + tokenizer) to the specified path
     print(f"Downloading model and tokenizer to: {save_path}")
-    snapshot_download(repo_id='Qwen/Qwen2.5-3B', local_dir=save_path)
+    snapshot_download(repo_id=repo_id, local_dir=save_path)
     
     # Verify by loading from the local path
     from transformers import AutoModelForCausalLM, AutoTokenizer
